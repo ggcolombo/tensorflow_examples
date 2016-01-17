@@ -1,4 +1,3 @@
-setwd(Sys.getenv('$PROJECT_HOME'))
 library(nnet)
 
 if (!file.exists('./MNIST_data/train.RData')){
