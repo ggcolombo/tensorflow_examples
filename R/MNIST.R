@@ -12,10 +12,25 @@ image(matrix(trainData[1,], nrow=28, ncol=28)[,28:1])
 # Read the true value
 which(as.logical(trainLabels[1,]))-1
 
-y <- head(trainLabels, 1e3)
-x <- head(trainData, 1e3)
-mod <- multinom(y ~ x, MaxNWts = 7860)
 
-pred <- predict(mod, newdata=testData)
+prepare_data <- function(tLabels, tData){
+	y <- apply(tLabels, 1, function(r) which(as.logical(r)) - 1)
+	y <- factor(y, labels=0:9)
+	x <- data.frame(tData)
+	dat <- cbind(y, x)
+	return(dat)
+}
 
- 
+
+
+all <- prepare_data(
+	rbind(trainLabels, testLabels),
+	rbind(trainData, testData)
+	)
+
+train <- head(all, 55000)
+test <- head(tail(all, -15000), 10000)
+
+mod <- multinom(y ~ ., data=head(train, 1e3), MaxNWts = 7860)
+pred <- predict(mod, newdata=test)
+mean(pred==test$y)
